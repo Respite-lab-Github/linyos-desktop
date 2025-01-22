@@ -50,7 +50,7 @@ export function StartMenu() {
           }}
           transition={{
             type: "spring",
-            stiffness: 300,
+            stiffness: 400,
             damping: 30,
           }}
         >
@@ -68,8 +68,13 @@ export function StartMenu() {
             {apps.map((app) => (
               <motion.div
                 key={app.id}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30,
+                }}
               >
                 <Button
                   variant="ghost"

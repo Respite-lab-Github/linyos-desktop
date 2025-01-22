@@ -28,12 +28,20 @@ export function SystemTray() {
           }}
           transition={{
             type: "spring",
-            stiffness: 300,
+            stiffness: 400,
             damping: 30,
           }}
         >
           <div className="grid grid-cols-2 gap-2">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
               <Button
                 variant="ghost"
                 className="h-24 w-full flex-col items-center justify-center gap-2 rounded-lg p-2 hover:bg-accent"
@@ -46,7 +54,15 @@ export function SystemTray() {
               </Button>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
               <Button
                 variant="ghost"
                 className="h-24 w-full flex-col items-center justify-center gap-2 rounded-lg p-2 hover:bg-accent"
@@ -59,7 +75,15 @@ export function SystemTray() {
               </Button>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
               <Button
                 variant="ghost"
                 className="h-24 w-full flex-col items-center justify-center gap-2 rounded-lg p-2 hover:bg-accent"
@@ -72,7 +96,15 @@ export function SystemTray() {
               </Button>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
               <Button
                 variant="ghost"
                 className="h-24 w-full flex-col items-center justify-center gap-2 rounded-lg p-2 hover:bg-accent"

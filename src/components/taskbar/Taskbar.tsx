@@ -11,7 +11,7 @@ export function Taskbar() {
 
   return (
     <motion.div
-      className="fixed bottom-0 left-0 right-0 z-50 flex h-12 items-center justify-between border-t bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="fixed bottom-0 left-0 right-0 z-50 flex h-12 items-center justify-between border-t bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-lg rounded-b-none mx-5"
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
       transition={{
@@ -30,7 +30,7 @@ export function Taskbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-none hover:bg-muted transition-colors duration-200"
+            className="h-10 w-10 hover:bg-muted transition-colors duration-200"
             onClick={toggleStartMenu}
           >
             <motion.div
@@ -82,7 +82,7 @@ export function Taskbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 rounded-none hover:bg-muted transition-colors duration-200"
+            className="h-10 w-10 hover:bg-muted transition-colors duration-200"
             onClick={toggleSystemTray}
           >
             <motion.div

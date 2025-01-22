@@ -44,7 +44,7 @@ export function TaskbarItem({ window }: TaskbarItemProps) {
         variant="ghost"
         size="icon"
         className={cn(
-          'relative h-12 w-12 rounded-none border-b-2 border-transparent p-0',
+          'relative h-12 w-12 border-b-2 border-transparent p-0 rounded-none',
           window.isActive && !window.isMinimized && 'border-primary bg-muted',
           'hover:bg-muted transition-colors duration-200'
         )}
