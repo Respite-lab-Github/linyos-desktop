@@ -281,7 +281,7 @@ export function FileMetadata({
                     <div className="flex items-center gap-2">
                       <span>{category.name}</span>
                       {category.description && (
-                        <span className="text-xs text-muted-foreground truncate">
+                        <span className="text-xs text-muted-foreground truncate max-w-40 overflow-auto">
                           {category.description}
                         </span>
                       )}
@@ -299,7 +299,7 @@ export function FileMetadata({
                       <div className="flex-1 min-w-0">
                         <div className="font-medium">{category.name}</div>
                         {category.description && (
-                          <div className="text-sm text-muted-foreground truncate">
+                          <div className="text-sm text-muted-foreground truncate max-w-40 overflow-auto">
                             {category.description}
                           </div>
                         )}

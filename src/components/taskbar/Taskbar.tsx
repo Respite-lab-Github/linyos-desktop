@@ -1,99 +1,123 @@
-import { Button } from '@/components/ui/button'
 import { useWindowsStore } from '@/store/windows'
-import { useAppsStore } from '@/store/apps'
 import { useSystemStore } from '@/store/system'
+import { TaskbarItem } from './TaskbarItem'
 import { SystemTray } from './SystemTray'
-import { cn } from '@/lib/utils'
-import { Bell } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { AnimatePresence, motion } from 'motion/react'
 
 export function Taskbar() {
-  const { windows, activateWindow } = useWindowsStore()
-  const { apps } = useAppsStore()
+  const windows = useWindowsStore((state) => state.windows)
   const { toggleStartMenu, toggleSystemTray } = useSystemStore()
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 flex h-12 items-center justify-between px-4 bg-background rounded-3xl rounded-b-none">
-      {/* 内容 */}
-      <div className="relative flex w-full items-center justify-between">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={toggleStartMenu}
-            className={cn(
-              'inline-flex h-8 w-8 items-center justify-center rounded-md',
-              'bg-transparent text-sm font-medium opacity-70 ring-offset-background',
-              'transition-opacity hover:opacity-100',
-              'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
-            )}
-          >
-            <span className="sr-only">Open start menu</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <rect width="7" height="7" x="3" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="14" rx="1" />
-              <rect width="7" height="7" x="3" y="14" rx="1" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="flex flex-1 items-center gap-1 overflow-x-auto px-1">
-          {windows.map((window) => {
-            const app = apps.find((app) => app.id === window.appId)
-            if (!app) return null
-
-            return (
-              <Button
-                key={window.id}
-                variant="ghost"
-                className={cn(
-                  'h-10 gap-2',
-                  window.isActive && 'bg-accent',
-                  window.isMinimized && 'opacity-60'
-                )}
-                onClick={() => {
-                  if (window.isMinimized) {
-                    useWindowsStore.getState().restoreWindow(window.id)
-                    activateWindow(window.id)
-                  } else if (!window.isActive) {
-                    activateWindow(window.id)
-                  } else {
-                    useWindowsStore.getState().minimizeWindow(window.id)
-                  }
-                }}
-              >
-                <img
-                  src={app.icon}
-                  alt={app.name}
-                  className="h-5 w-5 object-contain"
-                />
-                <span className="text-sm">{window.title}</span>
-              </Button>
-            )
-          })}
-        </div>
-
-        <div className="flex items-center gap-2">
+    <motion.div
+      className="fixed bottom-0 left-0 right-0 z-50 flex h-12 items-center justify-between border-t bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      }}
+    >
+      <div className="flex w-full items-center justify-between">
+        <motion.div
+          className="flex items-center gap-2"
+          initial={false}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10"
+            className="h-10 w-10 rounded-none hover:bg-muted transition-colors duration-200"
+            onClick={toggleStartMenu}
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+              >
+                <rect width="7" height="7" x="3" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="14" rx="1" />
+                <rect width="7" height="7" x="3" y="14" rx="1" />
+              </svg>
+            </motion.div>
+            <span className="sr-only">Start Menu</span>
+          </Button>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-1 items-center justify-center gap-1"
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {windows.map((window) => (
+              <TaskbarItem key={window.id} window={window} />
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div
+          className="flex items-center gap-2"
+          initial={false}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-none hover:bg-muted transition-colors duration-200"
             onClick={toggleSystemTray}
           >
-            <Bell className="h-5 w-5" />
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 30,
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+              >
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                <path d="M5 3v4" />
+                <path d="M19 17v4" />
+                <path d="M3 5h4" />
+                <path d="M17 19h4" />
+              </svg>
+            </motion.div>
+            <span className="sr-only">System Tray</span>
           </Button>
-        </div>
+        </motion.div>
       </div>
 
       <SystemTray />
-    </div>
+    </motion.div>
   )
 }
 

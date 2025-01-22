@@ -6,6 +6,7 @@ import { StartMenu } from '@/components/start-menu/StartMenu'
 import { Taskbar } from '@/components/taskbar/Taskbar'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { motion } from 'motion/react'
 
 export function Desktop() {
   const { apps } = useAppsStore()
@@ -44,33 +45,51 @@ export function Desktop() {
       )}
 
       <div className="relative grid h-[calc(100vh-48px)] w-full grid-cols-[repeat(auto-fill,minmax(100px,1fr))] grid-rows-[repeat(auto-fill,minmax(100px,1fr))] gap-1 p-2">
-        {apps.map((app) => (
-          <Button
+        {apps.map((app, index) => (
+          <motion.div
             key={app.id}
-            variant="ghost"
-            className={cn(
-              'group relative flex h-24 w-24 flex-col items-center justify-center gap-2 rounded-lg p-2',
-              'hover:bg-background/20 hover:backdrop-blur-md',
-              'focus:bg-background/30 focus:outline-none focus:ring-2 focus:ring-ring',
-              'active:scale-95 active:bg-background/40'
-            )}
-            onClick={() => handleAppClick(app)}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 25,
+              delay: index * 0.05,
+            }}
           >
-            <div className="relative h-12 w-12">
-              <img
-                src={app.icon}
-                alt={app.name}
-                className="h-full w-full object-contain drop-shadow-md"
-              />
-            </div>
-            <span className={cn(
-              "text-center text-xs font-medium leading-tight",
-              "text-foreground/90 group-hover:text-foreground",
-              settings.wallpaper && "drop-shadow-md"
-            )}>
-              {app.name}
-            </span>
-          </Button>
+            <Button
+              variant="ghost"
+              className={cn(
+                'group relative flex h-24 w-24 flex-col items-center justify-center gap-2 rounded-lg p-2',
+                'hover:bg-background/20 hover:backdrop-blur-md',
+                'focus:bg-background/30 focus:outline-none focus:ring-2 focus:ring-ring',
+                'active:scale-95 active:bg-background/40'
+              )}
+              onClick={() => handleAppClick(app)}
+            >
+              <motion.div
+                className="relative h-12 w-12"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <img
+                  src={app.icon}
+                  alt={app.name}
+                  className="h-full w-full object-contain drop-shadow-md"
+                />
+              </motion.div>
+              <motion.span
+                className={cn(
+                  "text-center text-xs font-medium leading-tight",
+                  "text-foreground/90 group-hover:text-foreground",
+                  settings.wallpaper && "drop-shadow-md"
+                )}
+                whileHover={{ y: -2 }}
+              >
+                {app.name}
+              </motion.span>
+            </Button>
+          </motion.div>
         ))}
       </div>
 
