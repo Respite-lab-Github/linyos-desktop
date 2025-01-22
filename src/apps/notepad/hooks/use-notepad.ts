@@ -5,7 +5,7 @@ import { NoteFile, NotepadState } from '../types'
 export function useNotepad() {
   const [files, setFiles] = useState<NoteFile[]>([])
   const [activeFileId, setActiveFileId] = useState<string | null>(null)
-  const { getAppData, setAppData } = window.linyos.usePersistStore.getState()
+  const { getAppData, setAppData } = window.linyos.usePersistStore()
 
   useEffect(() => {
     const savedState = getAppData<NotepadState>(metadata.id, 'state')
