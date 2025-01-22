@@ -5,7 +5,7 @@ import { metadata } from './config'
 export { metadata }
 
 export function render(container: HTMLElement) {
-  window.linyos.renderApi.render(container, <Editor />)
+  window.linyos.renderApi.render(container, <Editor key={crypto.randomUUID()} />)
 }
 
 export function destroy(container: HTMLElement) {
