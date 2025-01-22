@@ -1,98 +1,104 @@
-import { useEffect } from 'react'
-import { useAppsStore } from '@/store/apps'
 import { useSystemStore } from '@/store/system'
-import { Button } from '@/components/ui/button'
-import { Settings, Power } from 'lucide-react'
+import { useAppsStore } from '@/store/apps'
 import { useWindowsStore } from '@/store/windows'
-import { cn } from '@/lib/utils'
+import { motion, AnimatePresence } from 'motion/react'
+import { Button } from '@/components/ui/button'
 
 export function StartMenu() {
-  const { apps, loadApps, getAppModule, isLoading } = useAppsStore()
   const { isStartMenuOpen, toggleStartMenu } = useSystemStore()
+  const { apps } = useAppsStore()
+  const { addWindow } = useWindowsStore()
 
-  useEffect(() => {
-    loadApps()
-  }, [loadApps])
-
-  const handleAppClick = async (app: typeof apps[number]) => {
-    try {
-      const module = await getAppModule(app.id)
-      useWindowsStore.getState().addWindow({
-        title: module.metadata.name,
-        appId: app.id,
-        isActive: true,
-        isMinimized: false,
-        isMaximized: false,
-        position: {
-          x: Math.random() * (window.innerWidth - 600),
-          y: Math.random() * (window.innerHeight - 400),
-        },
-        size: {
-          width: 600,
-          height: 400,
-        },
-      })
-      toggleStartMenu()
-    } catch (error) {
-      console.error(`Failed to launch app ${app.id}:`, error)
-    }
+  const handleAppClick = (app: typeof apps[number]) => {
+    addWindow({
+      title: app.name,
+      appId: app.id,
+      isActive: true,
+      isMinimized: false,
+      isMaximized: false,
+      position: {
+        x: Math.random() * (window.innerWidth - 600),
+        y: Math.random() * (window.innerHeight - 400),
+      },
+      size: {
+        width: 600,
+        height: 400,
+      },
+    })
+    toggleStartMenu()
   }
 
-  if (!isStartMenuOpen) return null
-
   return (
-    <>
-      {/* Menu */}
-      <div className="absolute bottom-14 left-4 z-50 w-80 rounded-xl border bg-background/95 p-4 shadow-lg">
-        <div className="grid grid-cols-4 gap-2">
-          {isLoading ? (
-            <div className="col-span-4 text-center">Loading apps...</div>
-          ) : (
-            apps.map((app) => (
-              <button
+    <AnimatePresence>
+      {isStartMenuOpen && (
+        <motion.div
+          className="fixed bottom-14 left-2 z-50 w-80 rounded-lg border bg-background/95 p-4 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          initial={{
+            opacity: 0,
+            y: 20,
+            scale: 0.9,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            y: 20,
+            scale: 0.9,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+          }}
+        >
+          <div className="mb-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Type to search..."
+                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            {apps.map((app) => (
+              <motion.div
                 key={app.id}
-                onClick={() => handleAppClick(app)}
-                className={cn(
-                  'flex flex-col items-center justify-center gap-1 rounded-lg p-2',
-                  'hover:bg-accent hover:text-accent-foreground',
-                  'focus:bg-accent focus:text-accent-foreground focus:outline-none'
-                )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <img
-                  src={app.icon}
-                  alt={app.name}
-                  className="h-8 w-8 object-contain"
-                />
-                <span className="text-center text-xs font-medium leading-none">
-                  {app.name}
-                </span>
-              </button>
-            ))
-          )}
-        </div>
+                <Button
+                  variant="ghost"
+                  className="h-20 w-full flex-col items-center justify-center gap-2 rounded-lg p-2 hover:bg-accent"
+                  onClick={() => handleAppClick(app)}
+                >
+                  <img
+                    src={app.icon}
+                    alt={app.name}
+                    className="h-8 w-8 object-contain"
+                    draggable={false}
+                  />
+                  <span className="text-xs font-medium">{app.name}</span>
+                </Button>
+              </motion.div>
+            ))}
+          </div>
 
-        {/* System Controls */}
-        <div className="flex items-center justify-between border-t pt-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={() => handleAppClick(apps.find((app) => app.id === 'settings')!)}
-          >
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-destructive"
-          >
-            <Power className="h-4 w-4" />
-            <span>Shut Down</span>
-          </Button>
-        </div>
-      </div>
-    </>
+          <div className="mt-4 border-t pt-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-full bg-primary" />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">User</span>
+                <span className="text-xs text-muted-foreground">user@linyos.com</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
