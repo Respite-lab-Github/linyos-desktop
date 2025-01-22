@@ -13,13 +13,22 @@ interface Position {
   y: number
 }
 
+interface WindowResizeOptions {
+  size: Size
+  setSize: (size: Size) => void
+  position: Position
+  setPosition: (position: Position) => void
+  minSize?: Size
+}
+
 type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | null
 
 export function useWindowResize(
   windowId: string,
   windowRef: React.RefObject<HTMLDivElement | null>,
-  minSize: Size = { width: 200, height: 150 }
+  options: WindowResizeOptions
 ) {
+  const { size, setSize, position, setPosition, minSize = { width: 200, height: 150 } } = options
   const isResizing = useRef(false)
   const resizeDirection = useRef<ResizeDirection>(null)
   const startPos = useRef<Position>({ x: 0, y: 0 })
@@ -94,14 +103,8 @@ export function useWindowResize(
           newHeight = height
         }
 
-        useWindowsStore.getState().resizeWindow(windowId, {
-          width: newWidth,
-          height: newHeight,
-        })
-        useWindowsStore.getState().moveWindow(windowId, {
-          x: newX,
-          y: newY,
-        })
+        setSize({ width: newWidth, height: newHeight })
+        setPosition({ x: newX, y: newY })
       } else {
         const direction = getResizeDirection(e)
         updateCursor(direction)
@@ -112,14 +115,11 @@ export function useWindowResize(
       const direction = getResizeDirection(e)
       if (!direction) return
 
-      const window = useWindowsStore.getState().windows.find(w => w.id === windowId)
-      if (!window) return
-
       isResizing.current = true
       resizeDirection.current = direction
       startPos.current = { x: e.clientX, y: e.clientY }
-      startSize.current = window.size
-      startWindowPos.current = window.position
+      startSize.current = size
+      startWindowPos.current = position
 
       useWindowsStore.getState().activateWindow(windowId)
     }
@@ -143,5 +143,5 @@ export function useWindowResize(
       document.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [windowId, windowRef, minSize])
+  }, [windowId, windowRef, size, position, setSize, setPosition, minSize])
 }

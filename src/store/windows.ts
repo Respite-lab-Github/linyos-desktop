@@ -21,7 +21,6 @@ interface WindowsState {
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
   restoreWindow: (id: string) => void
-  moveWindow: (id: string, position: { x: number; y: number }) => void
   resizeWindow: (id: string, size: { width: number; height: number }) => void
 }
 
@@ -75,13 +74,6 @@ export const useWindowsStore = create<WindowsState>((set) => ({
     set((state) => ({
       windows: state.windows.map((w) =>
         w.id === id ? { ...w, isMaximized: false, isMinimized: false } : w
-      ),
-    })),
-
-  moveWindow: (id, position) =>
-    set((state) => ({
-      windows: state.windows.map((w) =>
-        w.id === id ? { ...w, position } : w
       ),
     })),
 

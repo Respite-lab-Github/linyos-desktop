@@ -6,10 +6,17 @@ interface Position {
   y: number
 }
 
+interface WindowDragOptions {
+  position: Position
+  setPosition: (position: Position) => void
+}
+
 export function useWindowDrag(
   windowId: string,
-  titleBarRef: React.RefObject<HTMLDivElement | null>
+  titleBarRef: React.RefObject<HTMLDivElement | null>,
+  options: WindowDragOptions
 ) {
+  const { position, setPosition } = options
   const isDragging = useRef(false)
   const startPos = useRef<Position>({ x: 0, y: 0 })
   const windowPos = useRef<Position>({ x: 0, y: 0 })
@@ -25,11 +32,7 @@ export function useWindowDrag(
 
       isDragging.current = true
       startPos.current = { x: e.clientX, y: e.clientY }
-
-      const window = useWindowsStore.getState().windows.find(w => w.id === windowId)
-      if (window) {
-        windowPos.current = window.position
-      }
+      windowPos.current = position
 
       // Activate window on drag
       useWindowsStore.getState().activateWindow(windowId)
@@ -44,17 +47,13 @@ export function useWindowDrag(
       const newX = windowPos.current.x + deltaX
       const newY = windowPos.current.y + deltaY
 
-      useWindowsStore.getState().moveWindow(windowId, { x: newX, y: newY })
+      setPosition({ x: newX, y: newY })
     }
 
     const handleMouseUp = () => {
       if (isDragging.current) {
         isDragging.current = false
-        // Update the stored window position
-        const window = useWindowsStore.getState().windows.find(w => w.id === windowId)
-        if (window) {
-          windowPos.current = window.position
-        }
+        windowPos.current = position
       }
     }
 
@@ -67,5 +66,5 @@ export function useWindowDrag(
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [windowId, titleBarRef])
+  }, [windowId, titleBarRef, position, setPosition])
 }

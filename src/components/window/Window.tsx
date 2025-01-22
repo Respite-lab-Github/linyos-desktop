@@ -1,9 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Window as WindowType } from '@/store/windows'
 import { useAppsStore } from '@/store/apps'
 import { cn } from '@/lib/utils'
 import { WindowHeader } from './WindowHeader'
 import { useWindowResize } from '@/hooks/use-window-resize'
+
+interface Position {
+  x: number
+  y: number
+}
+
+interface Size {
+  width: number
+  height: number
+}
 
 interface WindowProps {
   window: WindowType
@@ -13,8 +23,16 @@ export function Window({ window }: WindowProps) {
   const windowRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const { getAppModule } = useAppsStore()
+  const [position, setPosition] = useState<Position>(window.position)
+  const [size, setSize] = useState<Size>(window.size)
 
-  useWindowResize(window.id, windowRef)
+  useWindowResize(window.id, windowRef, {
+    size,
+    setSize,
+    position,
+    setPosition,
+    minSize: { width: 200, height: 150 }
+  })
 
   useEffect(() => {
     const loadApp = async () => {
@@ -46,10 +64,10 @@ export function Window({ window }: WindowProps) {
         transform: 'none',
       }
     : {
-        top: window.position.y,
-        left: window.position.x,
-        width: window.size.width,
-        height: window.size.height,
+        top: position.y,
+        left: position.x,
+        width: size.width,
+        height: size.height,
         transform: `translate(0, 0)`,
       }
 
@@ -66,7 +84,7 @@ export function Window({ window }: WindowProps) {
         zIndex: window.zIndex,
       }}
     >
-      <WindowHeader window={window} />
+      <WindowHeader window={window} position={position} setPosition={setPosition} />
       <div ref={contentRef} className="flex-1 overflow-hidden" />
     </div>
   )

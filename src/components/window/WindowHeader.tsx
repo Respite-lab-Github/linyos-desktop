@@ -1,19 +1,29 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { Window } from '@/store/windows'
 import { useWindowsStore } from '@/store/windows'
 import { useWindowDrag } from '@/hooks/use-window-drag'
 import { cn } from '@/lib/utils'
 import { Minus, Square, X, Minimize2 } from 'lucide-react'
 
-interface WindowHeaderProps {
-  window: Window
+interface Position {
+  x: number
+  y: number
 }
 
-export function WindowHeader({ window }: WindowHeaderProps) {
+interface WindowHeaderProps {
+  window: Window
+  position: Position
+  setPosition: (position: Position) => void
+}
+
+export function WindowHeader({ window, position, setPosition }: WindowHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null)
   const { activateWindow, minimizeWindow, maximizeWindow, restoreWindow, removeWindow } = useWindowsStore()
 
-  useWindowDrag(window.id, headerRef)
+  useWindowDrag(window.id, headerRef, {
+    position,
+    setPosition,
+  })
 
   const handleMaximizeClick = () => {
     if (window.isMaximized) {
