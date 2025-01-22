@@ -37,8 +37,6 @@ export function Window({ window }: WindowProps) {
     loadApp()
   }, [window.appId, getAppModule])
 
-  if (window.isMinimized) return null
-
   const style: React.CSSProperties = window.isMaximized
     ? {
         top: 0,
@@ -60,7 +58,8 @@ export function Window({ window }: WindowProps) {
       ref={windowRef}
       className={cn(
         'absolute flex flex-col rounded-lg border bg-background shadow-lg',
-        window.isActive && 'ring-1 ring-primary'
+        window.isActive && 'ring-1 ring-primary',
+        window.isMinimized && 'invisible pointer-events-none'
       )}
       style={{
         ...style,
