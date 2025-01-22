@@ -2,12 +2,18 @@ import { create } from 'zustand'
 import type { AppMetadata } from './system'
 import { getAvailableApps, loadAppModule } from '@/lib/app-loader'
 
+interface AppModule {
+  metadata: AppMetadata
+  render: (container: HTMLElement) => void
+  destroy?: (container: HTMLElement) => void
+}
+
 interface AppsState {
   apps: AppMetadata[]
-  loadedModules: Record<string, any>
+  loadedModules: Record<string, AppModule>
   isLoading: boolean
   loadApps: () => Promise<void>
-  getAppModule: (appId: string) => Promise<any>
+  getAppModule: (appId: string) => Promise<AppModule>
 }
 
 export const useAppsStore = create<AppsState>((set, get) => ({

@@ -1,9 +1,10 @@
 import { AppMetadata } from "@/store/system";
 
 export const metadata = {
-  id: 'notepad',
-  name: 'Notepad',
+  id: 'settings',
+  name: 'Settings',
   icon: '/default-icon.jpg',
-  description: 'A simple text editor',
+  description: 'System settings and customization',
   version: '1.0.0',
 } as AppMetadata
+

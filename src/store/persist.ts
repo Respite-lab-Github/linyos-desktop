@@ -45,7 +45,7 @@ export const usePersistStore = create<PersistStore>()(
       },
     }),
     {
-      name: 'linyos-persist-storage',
+      name: 'linyos-persist-storage/app-data',
     }
   )
 )

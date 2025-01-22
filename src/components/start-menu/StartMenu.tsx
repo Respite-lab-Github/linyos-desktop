@@ -4,6 +4,7 @@ import { useSystemStore } from '@/store/system'
 import { Button } from '@/components/ui/button'
 import { Settings, Power } from 'lucide-react'
 import { useWindowsStore } from '@/store/windows'
+import { cn } from '@/lib/utils'
 
 export function StartMenu() {
   const { apps, loadApps, getAppModule, isLoading } = useAppsStore()
@@ -13,14 +14,12 @@ export function StartMenu() {
     loadApps()
   }, [loadApps])
 
-  if (!isStartMenuOpen) return null
-
-  const handleAppClick = async (appId: string) => {
+  const handleAppClick = async (app: typeof apps[number]) => {
     try {
-      const module = await getAppModule(appId)
+      const module = await getAppModule(app.id)
       useWindowsStore.getState().addWindow({
         title: module.metadata.name,
-        appId,
+        appId: app.id,
         isActive: true,
         isMinimized: false,
         isMaximized: false,
@@ -35,34 +34,39 @@ export function StartMenu() {
       })
       toggleStartMenu()
     } catch (error) {
-      console.error(`Failed to launch app ${appId}:`, error)
+      console.error(`Failed to launch app ${app.id}:`, error)
     }
   }
 
+  if (!isStartMenuOpen) return null
+
   return (
-    <div className="fixed bottom-12 left-0 z-50 w-80 rounded-t-lg bg-background/95 p-4 shadow-lg backdrop-blur">
-      <div className="flex flex-col gap-4">
-        {/* Apps List */}
-        <div className="grid grid-cols-3 gap-2">
+    <>
+      {/* Menu */}
+      <div className="absolute bottom-14 left-4 z-50 w-80 rounded-xl border bg-background/95 p-4 shadow-lg">
+        <div className="grid grid-cols-4 gap-2">
           {isLoading ? (
-            <div className="col-span-3 text-center">Loading apps...</div>
+            <div className="col-span-4 text-center">Loading apps...</div>
           ) : (
             apps.map((app) => (
-              <Button
+              <button
                 key={app.id}
-                variant="ghost"
-                className="flex h-24 flex-col items-center justify-center gap-2 rounded-lg p-2"
-                onClick={() => handleAppClick(app.id)}
+                onClick={() => handleAppClick(app)}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-1 rounded-lg p-2',
+                  'hover:bg-accent hover:text-accent-foreground',
+                  'focus:bg-accent focus:text-accent-foreground focus:outline-none'
+                )}
               >
                 <img
                   src={app.icon}
                   alt={app.name}
-                  className="h-12 w-12 object-contain"
+                  className="h-8 w-8 object-contain"
                 />
-                <span className="text-center text-xs font-medium">
+                <span className="text-center text-xs font-medium leading-none">
                   {app.name}
                 </span>
-              </Button>
+              </button>
             ))
           )}
         </div>
@@ -73,7 +77,7 @@ export function StartMenu() {
             variant="ghost"
             size="sm"
             className="flex items-center gap-2"
-            onClick={() => handleAppClick('settings')}
+            onClick={() => handleAppClick(apps.find((app) => app.id === 'settings')!)}
           >
             <Settings className="h-4 w-4" />
             <span>Settings</span>
@@ -89,6 +93,6 @@ export function StartMenu() {
           </Button>
         </div>
       </div>
-    </div>
+    </>
   )
 }

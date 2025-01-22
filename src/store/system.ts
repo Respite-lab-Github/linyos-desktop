@@ -1,8 +1,10 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { useAppsStore } from './apps'
 import { useWindowsStore } from './windows'
 import { usePersistStore } from './persist'
 import { renderApi } from '@/lib/render'
+import { baseColors } from '@/lib/base-colors'
 
 export interface AppMetadata {
   id: string
@@ -18,13 +20,25 @@ interface AppModule {
   destroy?: () => void
 }
 
+interface SystemSettings {
+  wallpaper: string
+  theme: string
+  colorScheme: 'light' | 'dark'
+}
+
 interface SystemState {
-  isInitialized: boolean
+  // System state
   isStartMenuOpen: boolean
   isSystemTrayOpen: boolean
-  initialize: () => Promise<void>
+  settings: SystemSettings
+
+  // Actions
   toggleStartMenu: () => void
   toggleSystemTray: () => void
+  setWallpaper: (wallpaper: string) => void
+  setTheme: (theme: string) => void
+  setColorScheme: (scheme: 'light' | 'dark') => void
+  toggleColorScheme: () => void
 }
 
 export interface SystemStore {
@@ -41,38 +55,92 @@ export interface SystemStore {
   destroyApp: (appId: string, container: HTMLElement) => void
 }
 
-export const useSystemStore = create<SystemState>((set) => ({
-  isInitialized: false,
-  isStartMenuOpen: false,
-  isSystemTrayOpen: false,
+// Helper function to apply theme
+function applyTheme(themeName: string, colorScheme: 'light' | 'dark') {
+  const scheme = baseColors.find((c) => c.name === themeName)
+  if (!scheme) return
 
-  initialize: async () => {
-    try {
-      await useAppsStore.getState().loadApps()
-      set({ isInitialized: true })
-    } catch (error) {
-      console.error('Failed to initialize system:', error)
-    }
-  },
+  const root = document.documentElement
+  const vars = colorScheme === 'dark' ? scheme.cssVars.dark : scheme.cssVars.light
 
-  toggleStartMenu: () =>
-    set((state) => ({ isStartMenuOpen: !state.isStartMenuOpen })),
-  toggleSystemTray: () =>
-    set((state) => ({ isSystemTrayOpen: !state.isSystemTrayOpen })),
-}))
+  // 设置颜色方案
+  root.classList.remove('light', 'dark')
+  root.classList.add(colorScheme)
 
-// Expose stores to window for external access
-declare global {
-  interface Window {
-    linyos: {
-      useSystemStore: typeof useSystemStore
-      useAppsStore: typeof useAppsStore
-      useWindowsStore: typeof useWindowsStore
-      usePersistStore: typeof usePersistStore
-      renderApi: typeof renderApi
-    }
-  }
+  // 应用主题变量
+  Object.entries(vars).forEach(([key, value]) => {
+    root.style.setProperty(`--${key}`, value)
+  })
 }
+
+export const useSystemStore = create<SystemState>()(
+  persist(
+    (set, get) => ({
+      isStartMenuOpen: false,
+      isSystemTrayOpen: false,
+      settings: {
+        wallpaper: '',
+        theme: 'zinc',
+        colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      },
+
+      toggleStartMenu: () =>
+        set((state) => ({ isStartMenuOpen: !state.isStartMenuOpen })),
+
+      toggleSystemTray: () =>
+        set((state) => ({ isSystemTrayOpen: !state.isSystemTrayOpen })),
+
+      setWallpaper: (wallpaper: string) =>
+        set((state) => ({
+          settings: { ...state.settings, wallpaper }
+        })),
+
+      setTheme: (theme: string) => {
+        const { colorScheme } = get().settings
+        set((state) => ({
+          settings: { ...state.settings, theme }
+        }))
+        applyTheme(theme, colorScheme)
+      },
+
+      setColorScheme: (colorScheme: 'light' | 'dark') => {
+        const { theme } = get().settings
+        set((state) => ({
+          settings: { ...state.settings, colorScheme }
+        }))
+        applyTheme(theme, colorScheme)
+      },
+
+      toggleColorScheme: () => {
+        const { colorScheme, theme } = get().settings
+        const newScheme = colorScheme === 'light' ? 'dark' : 'light'
+        set((state) => ({
+          settings: { ...state.settings, colorScheme: newScheme }
+        }))
+        applyTheme(theme, newScheme)
+      },
+    }),
+    {
+      name: 'linyos-persist-storage/system-data',
+      onRehydrateStorage: () => (state) => {
+        // 加载应用
+        useAppsStore.getState().loadApps()
+
+        // 应用系统设置
+        if (state) {
+          const { theme, colorScheme } = state.settings
+          applyTheme(theme, colorScheme)
+
+          // 监听系统颜色方案变化
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const newScheme = e.matches ? 'dark' : 'light'
+            state.setColorScheme(newScheme)
+          })
+        }
+      }
+    }
+  )
+)
 
 if (typeof window !== 'undefined') {
   window.linyos = {
