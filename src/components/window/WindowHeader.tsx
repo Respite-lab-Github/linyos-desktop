@@ -39,7 +39,7 @@ export function WindowHeader({ window, position, setPosition }: WindowHeaderProp
     <motion.div
       ref={headerRef}
       className={cn(
-        'flex h-10 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-3 rounded-lg',
+        'flex h-10 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-3 rounded-lg rounded-b-none',
         'cursor-move select-none'
       )}
       onMouseDown={() => activateWindow(window.id)}
