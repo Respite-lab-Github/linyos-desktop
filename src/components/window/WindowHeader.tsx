@@ -16,11 +16,12 @@ interface WindowHeaderProps {
   window: Window
   position: Position
   setPosition: (position: Position) => void
+  onClose?: () => Promise<void>
 }
 
-export function WindowHeader({ window, position, setPosition }: WindowHeaderProps) {
+export function WindowHeader({ window, position, setPosition, onClose }: WindowHeaderProps) {
   const headerRef = useRef<HTMLDivElement>(null)
-  const { activateWindow, minimizeWindow, maximizeWindow, restoreWindow, removeWindow } = useWindowsStore()
+  const { activateWindow, minimizeWindow, maximizeWindow, restoreWindow } = useWindowsStore()
 
   useWindowDrag(window.id, headerRef, {
     position,
@@ -32,6 +33,12 @@ export function WindowHeader({ window, position, setPosition }: WindowHeaderProp
       restoreWindow(window.id)
     } else {
       maximizeWindow(window.id)
+    }
+  }
+
+  const handleCloseClick = async () => {
+    if (onClose) {
+      await onClose()
     }
   }
 
@@ -106,7 +113,7 @@ export function WindowHeader({ window, position, setPosition }: WindowHeaderProp
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-none hover:bg-red-500 hover:text-white transition-colors duration-200"
-            onClick={() => removeWindow(window.id)}
+            onClick={handleCloseClick}
           >
             <motion.div
               whileHover={{ scale: 1.1 }}

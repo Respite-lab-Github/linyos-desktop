@@ -10,7 +10,7 @@ interface TaskbarItemProps {
 }
 
 export function TaskbarItem({ window }: TaskbarItemProps) {
-  const { restoreWindow, activateWindow } = useWindowsStore()
+  const { restoreWindow, activateWindow, minimizeWindow } = useWindowsStore()
   const { apps } = useAppsStore()
   const app = apps.find(app => app.id === window.appId)
 
@@ -18,7 +18,7 @@ export function TaskbarItem({ window }: TaskbarItemProps) {
     if (window.isMinimized) {
       restoreWindow(window.id)
     } else if (window.isActive) {
-      useWindowsStore.getState().minimizeWindow(window.id)
+      minimizeWindow(window.id)
     } else {
       activateWindow(window.id)
     }

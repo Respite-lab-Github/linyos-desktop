@@ -17,20 +17,23 @@ export interface Window {
   isActive: boolean
   isMinimized: boolean
   isMaximized: boolean
+  isClosing: boolean
   position: Position
   size: Size
   zIndex: number
   originalState?: {
     position: Position
     size: Size
+    isMaximized: boolean
   }
 }
 
 interface WindowsState {
   windows: Window[]
   nextZIndex: number
-  addWindow: (window: Omit<Window, 'id' | 'zIndex' | 'originalState'>) => void
+  addWindow: (window: Omit<Window, 'id' | 'zIndex' | 'isClosing' | 'originalState'>) => void
   removeWindow: (id: string) => void
+  setClosing: (id: string, isClosing: boolean) => void
   activateWindow: (id: string) => void
   minimizeWindow: (id: string) => void
   maximizeWindow: (id: string) => void
@@ -51,7 +54,7 @@ export const useWindowsStore = create<WindowsState>((set) => ({
           ...window,
           id: crypto.randomUUID(),
           zIndex: state.nextZIndex,
-          originalState: undefined,
+          isClosing: false,
         },
       ],
       nextZIndex: state.nextZIndex + 1,
@@ -60,6 +63,18 @@ export const useWindowsStore = create<WindowsState>((set) => ({
   removeWindow: (id) =>
     set((state) => ({
       windows: state.windows.filter((w) => w.id !== id),
+    })),
+
+  setClosing: (id, isClosing) =>
+    set((state) => ({
+      windows: state.windows.map((w) =>
+        w.id === id
+          ? {
+              ...w,
+              isClosing,
+            }
+          : w
+      ),
     })),
 
   activateWindow: (id) =>
@@ -96,16 +111,15 @@ export const useWindowsStore = create<WindowsState>((set) => ({
               ...w,
               isMaximized: true,
               isMinimized: false,
-              originalState: w.isMaximized
-                ? w.originalState
-                : {
-                    position: w.position,
-                    size: w.size,
-                  },
+              originalState: {
+                position: w.position,
+                size: w.size,
+                isMaximized: false
+              },
               position: { x: 0, y: 0 },
               size: {
                 width: globalThis.window.innerWidth,
-                height: globalThis.window.innerHeight - 48, // Subtract taskbar height
+                height: globalThis.window.innerHeight - 48,
               },
             }
           : w
@@ -122,7 +136,6 @@ export const useWindowsStore = create<WindowsState>((set) => ({
           const restored = {
             ...w,
             isMinimized: false,
-            isMaximized: false,
             isActive: true,
             zIndex: maxZIndex + 1,
           }
@@ -130,6 +143,7 @@ export const useWindowsStore = create<WindowsState>((set) => ({
           if (w.originalState) {
             restored.position = w.originalState.position
             restored.size = w.originalState.size
+            restored.isMaximized = false
             restored.originalState = undefined
           }
 
