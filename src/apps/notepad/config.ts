@@ -2,7 +2,7 @@ import { AppMetadata } from "@/store/system";
 
 export const metadata = {
   id: 'notepad',
-  name: 'Notepad',
+  name: '记事本',
   icon: '/default-icon.jpg',
   description: 'A simple text editor',
   version: '1.0.0',

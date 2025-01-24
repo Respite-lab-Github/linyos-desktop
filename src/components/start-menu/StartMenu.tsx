@@ -58,7 +58,7 @@ export function StartMenu() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Type to search..."
+                placeholder="搜索应用，文档和设置"
                 className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               />
             </div>

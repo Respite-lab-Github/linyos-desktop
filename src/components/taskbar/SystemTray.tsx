@@ -48,7 +48,7 @@ export function SystemTray() {
               >
                 <Volume2 className="h-8 w-8" />
                 <div className="flex flex-col items-center">
-                  <span className="text-sm font-medium">Volume</span>
+                  <span className="text-sm font-medium">音量</span>
                   <span className="text-xs text-muted-foreground">50%</span>
                 </div>
               </Button>
@@ -69,8 +69,8 @@ export function SystemTray() {
               >
                 <Wifi className="h-8 w-8" />
                 <div className="flex flex-col items-center">
-                  <span className="text-sm font-medium">Wi-Fi</span>
-                  <span className="text-xs text-muted-foreground">Connected</span>
+                  <span className="text-sm font-medium">Wi-Fi 互联网</span>
+                  <span className="text-xs text-muted-foreground">已连接</span>
                 </div>
               </Button>
             </motion.div>
@@ -90,7 +90,7 @@ export function SystemTray() {
               >
                 <Battery className="h-8 w-8" />
                 <div className="flex flex-col items-center">
-                  <span className="text-sm font-medium">Battery</span>
+                  <span className="text-sm font-medium">电池</span>
                   <span className="text-xs text-muted-foreground">100%</span>
                 </div>
               </Button>
@@ -111,7 +111,7 @@ export function SystemTray() {
               >
                 <Sun className="h-8 w-8" />
                 <div className="flex flex-col items-center">
-                  <span className="text-sm font-medium">Brightness</span>
+                  <span className="text-sm font-medium">亮度</span>
                   <span className="text-xs text-muted-foreground">75%</span>
                 </div>
               </Button>
@@ -120,15 +120,15 @@ export function SystemTray() {
 
           <div className="mt-4 space-y-3 border-t pt-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Night Light</span>
+              <span className="text-sm font-medium">夜间模式</span>
               <div className="h-4 w-8 rounded-full bg-primary/20" />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Battery Saver</span>
+              <span className="text-sm font-medium">低电量模式</span>
               <div className="h-4 w-8 rounded-full bg-primary/20" />
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Focus Assist</span>
+              <span className="text-sm font-medium">专注助手</span>
               <div className="h-4 w-8 rounded-full bg-primary/20" />
             </div>
           </div>

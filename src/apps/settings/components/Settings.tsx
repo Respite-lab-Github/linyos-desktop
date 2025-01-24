@@ -25,9 +25,9 @@ export function Settings() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Theme</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">主题</h2>
             <p className="text-sm text-muted-foreground">
-              Customize the appearance of your system
+              自定义系统的外观
             </p>
           </div>
           <Button
@@ -80,9 +80,9 @@ export function Settings() {
       {/* Wallpaper Settings */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Wallpaper</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">壁纸</h2>
           <p className="text-sm text-muted-foreground">
-            Choose a background image for your desktop
+            为系统选择壁纸
           </p>
         </div>
 
@@ -98,7 +98,7 @@ export function Settings() {
               ) : (
                 <div className="flex h-full items-center justify-center">
                   <span className="text-sm text-muted-foreground">
-                    No wallpaper selected
+                    当前无壁纸
                   </span>
                 </div>
               )}
@@ -114,7 +114,7 @@ export function Settings() {
               <Button
                 onClick={() => document.getElementById('wallpaper-input')?.click()}
               >
-                Choose Image
+                选择图片
               </Button>
             </div>
           </CardContent>
